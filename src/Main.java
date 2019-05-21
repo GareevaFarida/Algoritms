@@ -1,18 +1,14 @@
-import java.util.Arrays;
 import java.util.Random;
 
 public class Main {
     private static Random rnd = new Random();
-    public static final int SIZE_OF_ARRAY = 1000;
+    public static final int SIZE_OF_ARRAY = 100_000;
 
     public static void main(String[] args) {
-        Array<Float> arr = new ArrayImpl<>(SIZE_OF_ARRAY);
+        Array<Integer> arr = new ArrayImpl<>(SIZE_OF_ARRAY);
         fillArrayRandomValues(arr, SIZE_OF_ARRAY);
 
-        Array<Float> arrCopy = new ArrayImpl<>(SIZE_OF_ARRAY);
-
-//        System.out.println(arr.toString());
-//        System.out.println(arrCopy.toString());
+        Array<Integer> arrCopy = new ArrayImpl<>(SIZE_OF_ARRAY);
 
         copyOf(arr, arrCopy);
         testSortBubbles(arrCopy);
@@ -44,15 +40,16 @@ public class Main {
         System.out.println("Сортировка выбором на "+SIZE_OF_ARRAY+" элементах составляет "+timeInNanoSec+" наносекунд.");
     }
 
-    private static void copyOf(Array<Float> arr, Array<Float> arrCopy) {
+    private static void copyOf(Array<Integer> src, Array<Integer> dst) {
+        dst.clear();
         for (int i = 0; i < SIZE_OF_ARRAY; i++) {
-            arrCopy.add(arr.get(i));
+            dst.add(src.get(i));
         }
     }
 
     private static void fillArrayRandomValues(Array arr, int size) {
         for (int i = 0; i < size; i++) {
-            arr.add(rnd.nextFloat());
+            arr.add((int)(1000*rnd.nextFloat()));
         }
     }
 }
