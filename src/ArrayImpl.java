@@ -16,7 +16,7 @@ public class ArrayImpl<E extends Object & Comparable<? super E>> implements Arra
 
     @Override
     public void add(E value) {
-        if (data.length < currentSize) {
+        if (data.length == currentSize) {
             grow();
         }
         data[currentSize++] = value;
