@@ -16,13 +16,14 @@ public class ArrayImpl<E extends Object & Comparable<? super E>> implements Arra
 
     @Override
     public void add(E value) {
-        if (data.length >= currentSize) {
+        if (data.length < currentSize) {
             grow();
         }
         data[currentSize++] = value;
     }
 
     private void grow() {
+        System.out.println("size after grow() "+data.length * 2);
         data = Arrays.copyOf(data, data.length * 2);
     }
 
@@ -83,13 +84,6 @@ public class ArrayImpl<E extends Object & Comparable<? super E>> implements Arra
         data[index] = value;
     }
 
-//  //  @Override
-//    public void arraycopy(ArrayImpl src, int indexSrc, ArrayImpl dest, int indexDesc, int lenght) {
-//        for (int i = indexSrc; i < indexDesc+lenght; i++) {
-//            dest.setValueByIndex(src.get(i),indexDesc+i);
-//        }
-//    }
-
     @Override
     public void sortBubbles() {
         for (int j = 0; j < currentSize - 1; j++) {
@@ -130,5 +124,13 @@ public class ArrayImpl<E extends Object & Comparable<? super E>> implements Arra
                 } else break;
             }
         }
+    }
+
+    @Override
+    public void clear() {
+        for (int i = 0; i < currentSize; i++) {
+            data[i] = null;
+        }
+        currentSize = 0;
     }
 }
