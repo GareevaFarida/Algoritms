@@ -3,7 +3,7 @@ import java.util.Random;
 
 public class Main {
     private static Random rnd = new Random();
-    public static final int SIZE_OF_ARRAY = 100;
+    public static final int SIZE_OF_ARRAY = 1000;
 
     public static void main(String[] args) {
         Array<Float> arr = new ArrayImpl<>(SIZE_OF_ARRAY);
