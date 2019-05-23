@@ -1,3 +1,5 @@
+package Lesson2;
+
 public interface Array<E> {
     void add(E value);
     boolean remove(E value);
