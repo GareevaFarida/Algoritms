@@ -12,5 +12,5 @@ public interface Array<E> {
     void sortSelection();
     void sortInsert();
     void setValueByIndex(E value, int index);
-    //void arraycopy(Array src, int indexSrc, Array dest, int indexDesc, int lenght);
+    void clear();
 }
