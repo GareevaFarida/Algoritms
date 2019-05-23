@@ -1,3 +1,5 @@
+package Lesson2;
+
 import java.util.Arrays;
 
 public class ArrayImpl<E extends Object & Comparable<? super E>> implements Array<E> {

@@ -1,8 +1,10 @@
+package Lesson2;
+
 import java.util.Random;
 
-public class Main {
+public class Main2 {
     private static Random rnd = new Random();
-    public static final int SIZE_OF_ARRAY = 100_000;
+    public static final int SIZE_OF_ARRAY = 10_000;
 
     public static void main(String[] args) {
         Array<Integer> arr = new ArrayImpl<>(SIZE_OF_ARRAY);
