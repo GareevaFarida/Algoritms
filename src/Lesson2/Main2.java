@@ -43,7 +43,7 @@ public class Main2 {
     }
 
     private static void copyOf(Array<Integer> src, Array<Integer> dst) {
-       // dst.clear();
+        dst.clear();
         for (int i = 0; i < SIZE_OF_ARRAY; i++) {
             dst.add(src.get(i));
         }
