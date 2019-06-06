@@ -54,6 +54,23 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
         return deep;
     }
 
+    @Override
+    public boolean isBalanced() {
+        return isBalanced(root);
+    }
+
+    private boolean isBalanced(Node node) {
+        return (node == null) ||
+                isBalanced(node.getLeftChild()) &&
+                        isBalanced(node.getRightChild()) &&
+                        Math.abs(height(node.getLeftChild()) - height(node.getRightChild())) <= 1;
+    }
+
+    private int height(Node node) {
+        return node == null ? 0 : 1 + Math.max(height(node.getLeftChild()), height(node.getRightChild()));
+    }
+
+
     /**
      * finds node, which containes the value, and node, which is a parent of found node.
      * Search starts from root of tree: findCurrentAndPreviousNode(value, root, null).
@@ -240,5 +257,52 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
             nBlanks /= 2;
         }
         System.out.println("................................................................");
+    }
+
+    @Override
+    public void traverse(TraverseMode traverseMode) {
+        switch (traverseMode) {
+            case IN_ORDER:
+                inOrder(root);
+                break;
+            case PRE_ORDER:
+                preOrder(root);
+                break;
+            case POST_ORDER:
+                postOrder(root);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown traverse mode " + traverseMode);
+        }
+    }
+
+    private void postOrder(Node<E> node) {
+        if (node == null) {
+            return;
+        }
+
+        inOrder(node.getLeftChild());
+        inOrder(node.getRightChild());
+        System.out.println(node);
+    }
+
+    private void preOrder(Node<E> node) {
+        if (node == null) {
+            return;
+        }
+
+        System.out.println(node);
+        inOrder(node.getLeftChild());
+        inOrder(node.getRightChild());
+    }
+
+    private void inOrder(Node<E> node) {
+        if (node == null) {
+            return;
+        }
+
+        inOrder(node.getLeftChild());
+        System.out.println(node);
+        inOrder(node.getRightChild());
     }
 }

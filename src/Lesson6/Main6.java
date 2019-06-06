@@ -1,5 +1,7 @@
 package Lesson6;
 
+import java.util.Random;
+
 public class Main6 {
     public static void main(String[] args) {
         Tree<Integer> tree = new TreeImpl<>();
@@ -21,7 +23,13 @@ public class Main6 {
         System.out.println("Size of tree: " + tree.getSize());
         tree.display();
         tree.remove(15);
-        System.out.println("Size of tree after removing value = 9: " + tree.getSize());
+        System.out.println("Size of tree after removing value = 15: " + tree.getSize());
         tree.display();
+        System.out.println("Travers in order:_____________________");
+        tree.traverse(Tree.TraverseMode.IN_ORDER);
+        System.out.println("Travers post order:_____________________");
+        tree.traverse(Tree.TraverseMode.POST_ORDER);
+        System.out.println("Travers pre order:__________________________");
+        tree.traverse(Tree.TraverseMode.PRE_ORDER);
     }
-}
+  }
