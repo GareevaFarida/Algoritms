@@ -6,15 +6,20 @@ class Node<E extends Comparable<? super E>> {
     private final E value;
     private Node<E> rightChild;
     private Node<E> leftChild;
+    private int deep;
 
-    Node(E value) {
+    Node(E value, int deep) {
         this.value = value;
+        this.deep = deep;
     }
 
     public E getValue() {
         return value;
     }
 
+    public int getDeep() {
+        return deep;
+    }
 
     Node<E> getRightChild() {
         return rightChild;
@@ -36,8 +41,8 @@ class Node<E extends Comparable<? super E>> {
         this.leftChild = leftChild;
     }
 
-    boolean isLeftChild(Node<E> parent){
-        return  this.value.compareTo(parent.getValue())<0;
+    boolean isLeftChildOf(Node<E> parent) {
+        return this.equals(parent.leftChild);
     }
 
     @Override
@@ -53,4 +58,26 @@ class Node<E extends Comparable<? super E>> {
         return Objects.hash(value);
     }
 
+    public boolean hasOneChild() {
+        return getLeftChild() != null ^ getRightChild() != null;
+    }
+
+    public boolean hasTwoChildren() {
+        return getLeftChild() != null && getRightChild() != null;
+    }
+
+    public boolean hasLeftChild() {
+        return getLeftChild() != null;
+    }
+
+    public void setDeep(int deep) {
+        this.deep = deep;
+    }
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "value=" + value +
+                '}';
+    }
 }

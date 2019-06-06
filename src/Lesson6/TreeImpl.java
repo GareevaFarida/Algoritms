@@ -4,11 +4,11 @@ import java.util.Stack;
 
 public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
 
-    private class CurrentAndPreviousNode<E> {
+    private class CurrentAndPreviousNodes<E> {
         Node current;
         Node previous;
 
-        public CurrentAndPreviousNode(Node current, Node previous) {
+        public CurrentAndPreviousNodes(Node current, Node previous) {
             this.current = current;
             this.previous = previous;
         }
@@ -20,20 +20,20 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
     @Override
     public void add(E value) {
         if (isEmpty()) {
-            root = new Node(value);
+            root = new Node(value, 0);
             size++;
         } else insertNode(value, root);
     }
 
     private void insertNode(E insertedValue, Node<E> parent) {
-        CurrentAndPreviousNode<E> currentAndPreviousNode = findCurrentAndPreviousNode(insertedValue, root, null);
-        if (currentAndPreviousNode.current == null)
-            insertLeaf(insertedValue, currentAndPreviousNode.previous);
+        CurrentAndPreviousNodes<E> currentAndPreviousNodes = findCurrentAndPreviousNodes(insertedValue, root, null);
+        if (currentAndPreviousNodes.current == null)
+            insertLeaf(insertedValue, currentAndPreviousNodes.previous);
     }
 
     private void insertLeaf(E insertedValue, Node<E> parent) {
         int valueOfComparison = parent.getValue().compareTo(insertedValue);
-        Node<E> newNode = new Node<E>(insertedValue);
+        Node<E> newNode = new Node<E>(insertedValue, parent.getDeep() + 1);
         if (valueOfComparison > 0) {
             parent.setLeftChild(newNode);
         } else parent.setRightChild(newNode);
@@ -42,24 +42,42 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
 
     @Override
     public boolean contains(E value) {
-        CurrentAndPreviousNode<E> currentAndPreviousNode = findCurrentAndPreviousNode(value, root, null);
-        return currentAndPreviousNode.current != null;
+        CurrentAndPreviousNodes<E> currentAndPreviousNodes = findCurrentAndPreviousNodes(value, root, null);
+        return currentAndPreviousNodes.current != null;
     }
 
-    private CurrentAndPreviousNode<E> findCurrentAndPreviousNode(E value, Node<E> current, Node<E> parent) {
+    public int deepOfValue(E value) {
+        int deep = -1;
+        CurrentAndPreviousNodes<E> nodes = findCurrentAndPreviousNodes(value, root, null);
+        if (nodes.current != null)
+            deep = nodes.current.getDeep();
+        return deep;
+    }
+
+    /**
+     * finds node, which containes the value, and node, which is a parent of found node.
+     * Search starts from root of tree: findCurrentAndPreviousNode(value, root, null).
+     *
+     * @param value   - E finding value
+     * @param current - current Node
+     * @param parent  - parent of current Node
+     * @return CurrentAndPreviousNode<E> - element of class,  which contains two fields:
+     * current - Node, which contains finding value
+     * parent - Node, which is a parent of current node
+     * if current is null, the structure doesn't contain the value
+     */
+    private CurrentAndPreviousNodes<E> findCurrentAndPreviousNodes(E value, Node<E> current, Node<E> parent) {
         if (current == null) {
-            return new CurrentAndPreviousNode<>(null, parent);
+            return new CurrentAndPreviousNodes<>(null, parent);
         }
         int valueOfComparison = current.getValue().compareTo(value);
         if (valueOfComparison == 0) {
-            /**
-             *  nothing have to do, values in structure must be unique*/
-            return new CurrentAndPreviousNode<>(current, parent);
+            return new CurrentAndPreviousNodes<>(current, parent);
         }
         if (valueOfComparison > 0)
-            return findCurrentAndPreviousNode(value, current.getLeftChild(), current);
+            return findCurrentAndPreviousNodes(value, current.getLeftChild(), current);
         else
-            return findCurrentAndPreviousNode(value, current.getRightChild(), current);
+            return findCurrentAndPreviousNodes(value, current.getRightChild(), current);
     }
 
     @Override
@@ -69,24 +87,104 @@ public class TreeImpl<E extends Comparable<? super E>> implements Tree<E> {
 
     @Override
     public boolean remove(E value) {
-        CurrentAndPreviousNode<E> currentAndPreviousNode = findCurrentAndPreviousNode(value, root, null);
-        Node<E> removingNode = currentAndPreviousNode.current;
+        CurrentAndPreviousNodes<E> currentAndPreviousNodes = findCurrentAndPreviousNodes(value, root, null);
+        Node<E> removingNode = currentAndPreviousNodes.current;
         /**
          * value not found - nothing to remove*/
         if (removingNode == null)
             return false;
 
         if (removingNode.isLeaf()) {
-            removeLeaf(currentAndPreviousNode);
+            removeLeaf(currentAndPreviousNodes);
         }
 
+        if (removingNode.hasOneChild())
+            removeParentOfOneChild(currentAndPreviousNodes);
+
+        if (removingNode.hasTwoChildren())
+            removeParentOfTwoChildren(currentAndPreviousNodes);
+
+        size--;
         return true;
     }
 
-    private void removeLeaf(CurrentAndPreviousNode<E> nodes) {
+    private void removeParentOfTwoChildren(CurrentAndPreviousNodes<E> currentAndPreviousNodes) {
+        Node<E> removingElement = currentAndPreviousNodes.current;
+        Node<E> parentOfRemovingElement = currentAndPreviousNodes.previous;
+
+        //find successor for removing element
+        CurrentAndPreviousNodes<E> successorNodes = getSuccessor(currentAndPreviousNodes.current);
+        Node<E> successor = successorNodes.current;
+
+        //set new deep for successor - it's a deep of removing element
+        successor.setDeep(removingElement.getDeep());
+
+        //set successor instead of removing element:
+        //1.parent of removing element gets new child - successor - instead of removing element
+        if (removingElement.equals(root))
+            root = successor;
+        else {
+            if (removingElement.isLeftChildOf(parentOfRemovingElement))
+                parentOfRemovingElement.setLeftChild(successor);
+            else
+                parentOfRemovingElement.setRightChild(successor);
+        }
+
+        //2.successor gets children of removing element
+        successor.setLeftChild(removingElement.getLeftChild());
+        if (successor != removingElement.getRightChild())
+            successor.setRightChild(removingElement.getRightChild());
+
+
+        //3.Ex-parent of successor forgets about his child
+        Node<E> exParentOfSuccessor = successorNodes.previous;
+        if (successor.isLeftChildOf(exParentOfSuccessor))
+            exParentOfSuccessor.setLeftChild(null);
+        else
+            exParentOfSuccessor.setRightChild(null);
+
+        //clear links: removing element forgets about its children
+        removingElement.setLeftChild(null);
+        removingElement.setRightChild(null);
+    }
+
+    /**
+     * finds more appropriate element to become a parent for two children instead of removing node
+     * To find successor, get right child and find the last left generation
+     *
+     * @param current - removing Node
+     * @return CurrentAndPreviousNodes - successor for removing node and it's parent
+     */
+    private CurrentAndPreviousNodes<E> getSuccessor(Node current) {
+        // if (current == null) throw new AssertionError("Internal error: removing node can't be null.");
+        Node<E> parentOfSuccessor = current;
+        Node<E> leftOffspring = current.getRightChild();
+        while (leftOffspring.hasLeftChild()) {
+            parentOfSuccessor = leftOffspring;
+            leftOffspring = leftOffspring.getLeftChild();
+        }
+        return new CurrentAndPreviousNodes<>(leftOffspring, parentOfSuccessor);
+    }
+
+    private void removeParentOfOneChild(CurrentAndPreviousNodes<E> currentAndPreviousNodes) {
+        Node<E> removingNode = currentAndPreviousNodes.current;
+        Node<E> leftChild = removingNode.getLeftChild();
+        Node<E> rightChild = removingNode.getRightChild();
+        if (leftChild != null) {
+            currentAndPreviousNodes.previous.setLeftChild(leftChild);
+        } else if (rightChild != null) {
+            currentAndPreviousNodes.previous.setRightChild(rightChild);
+        }
+    }
+
+    private void removeLeaf(CurrentAndPreviousNodes<E> nodes) {
         Node<E> removingNode = nodes.current;
         Node<E> parent = nodes.previous;
-        if (removingNode.isLeftChild(parent))
+        if (removingNode == root) {
+            root = null;
+            return;
+        }
+        if (removingNode.isLeftChildOf(parent))
             parent.setLeftChild(null);
         else
             parent.setRightChild(null);
