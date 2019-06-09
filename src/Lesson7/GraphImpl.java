@@ -72,7 +72,7 @@ public class GraphImpl<E> implements Graph<E> {
         ArrayList<Node<E>> resultsArray = new ArrayList<>();
 
         Queue<Node<E>> queue = new LinkedList<>();
-        createNewNode(from, queue);
+        createNewNode(from, queue, 0f);
         while (!queue.isEmpty()) {
             Node<E> currentNode = queue.peek();
             if (currentNode.getVertex().equals(to)) {
@@ -82,52 +82,72 @@ public class GraphImpl<E> implements Graph<E> {
             Node<E> nextNode = getNearestNotVisitedVertex(currentNode, queue);
             if (nextNode == null) {
                 queue.remove();
-                System.out.println(queue.size());
             } else {
                 queue.add(nextNode);
-                System.out.println(queue.size());
             }
         }
 
-        displayVarietyOfPath(from,to,resultsArray);
-        return 0;
+        //displayVarietyOfPath(resultsArray, to);
+        return selectTheShortestPath(resultsArray, to);
     }
 
-    private void displayVarietyOfPath(Vertex<E> from, Vertex<E> to,ArrayList<Node<E>> resultsArray) {
+    private float selectTheShortestPath(ArrayList<Node<E>> resultArray, Vertex<E> finish) {
+        if (resultArray.isEmpty())
+            return 0f;
+        float minDistance = resultArray.get(0).getDistance();
+        Node<E> shortestNode = resultArray.get(0);
+        for (int i = 1; i < resultArray.size(); i++) {
+            float currentDistance = resultArray.get(i).getDistance();
+            if (currentDistance < minDistance) {
+                minDistance = currentDistance;
+                shortestNode = resultArray.get(i);
+            }
+        }
+        displayPath(shortestNode.getPath(), finish, minDistance);
+
+        return minDistance;
+    }
+
+    private void displayVarietyOfPath(ArrayList<Node<E>> resultsArray, Vertex<E> finish) {
         for (Node<E> node : resultsArray) {
             System.out.println("-------------------------------");
-            System.out.print(from+"-->");
-            Queue<Vertex<E>> path = node.getPath();
-            while (!path.isEmpty()) {
-                System.out.print(path.remove()+"-->");
-            }
-            System.out.println(to);
+            ArrayList<Vertex<E>> path = node.getPath();
+            displayPath(path, finish, node.getDistance());
         }
+    }
+
+    private void displayPath(ArrayList<Vertex<E>> path, Vertex<E> finish, float distance) {
+        System.out.println("The shortest distance = " + distance + ": ");
+        for (int i = 0; i < path.size(); i++) {
+            System.out.print(path.get(i) + "-->");
+        }
+        System.out.println(finish);
     }
 
     private Node<E> getNearestNotVisitedVertex(Node<E> node, Queue<Node<E>> queue) {
         int index = node.getIndexInMatrix();
         for (int i = 0; i < MAX_VERTEX_COUNT; i++) {
-            if (adjMat[index][i] != null) {
-                Vertex<E> nextVertex = vertexList.get(i);
-                if (!node.isContainedInPath(nextVertex)) {
-                    node.markVisitedNeighbor(nextVertex);
-                    createNewNode(nextVertex, queue);
-                }
+            Float distance = adjMat[index][i];
+            if (distance == null)
+                continue;
+            Vertex<E> nextVertex = vertexList.get(i);
+            if (!node.isContainedInPath(nextVertex)
+                    && !node.wasNeighborVisited(nextVertex)) {
+                node.markVisitedNeighbor(nextVertex);
+                createNewNode(nextVertex, queue, distance);
             }
         }
         return null;
     }
 
-    private void createNewNode(Vertex<E> vertex, Queue<Node<E>> queue) {
+    private void createNewNode(Vertex<E> vertex, Queue<Node<E>> queue, Float distance) {
         Node<E> node = new Node<>(vertex, MAX_VERTEX_COUNT, vertexList.indexOf(vertex));
         Node<E> previousNode = queue.peek();
         queue.add(node);
         if (previousNode != null) {
             //copy path of previous to new node
-            node.setPathFromPrevious(previousNode);
+            node.setPathFromPrevious(previousNode, distance);
         }
-        //vertex.setVisited(true);
     }
 
 }
