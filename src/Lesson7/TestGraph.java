@@ -86,6 +86,7 @@ public class TestGraph {
   //      graph.display();
 
         graph.getTheShortestDistanceBetween(RedPres_Taganskaya, Circle_October);
+        graph.getTheShortestDistanceBetween(Circle_Pavel, new Vertex<String>("Новокузнецкая"));
         graph.getTheShortestDistanceBetween(Circle_Pavel, Orange_Tretjak);
 
 

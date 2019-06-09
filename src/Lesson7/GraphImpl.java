@@ -117,7 +117,7 @@ public class GraphImpl<E> implements Graph<E> {
     }
 
     private void displayPath(ArrayList<Vertex<E>> path, Vertex<E> finish, float distance) {
-        System.out.println("The shortest distance = " + distance + ": ");
+        System.out.println("The shortest distance between " + path.get(0) + " and " + finish + " = " + distance + ": ");
         for (int i = 0; i < path.size(); i++) {
             System.out.print(path.get(i) + "-->");
         }
