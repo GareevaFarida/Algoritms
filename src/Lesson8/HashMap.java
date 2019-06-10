@@ -1,8 +1,8 @@
 package Lesson8;
 
-public interface HashMap<E> {
-    void add(E value);
-    boolean delete(E value);
+public interface HashMap<E,T> {
+    void put(E key, T value);
+    boolean delete(E key);
     boolean isEmpty();
     int size();
     void display();

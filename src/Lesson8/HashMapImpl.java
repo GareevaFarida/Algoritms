@@ -1,47 +1,49 @@
 package Lesson8;
 
-import java.util.Arrays;
+import java.util.LinkedList;
 
-public class HashMapImpl<E> implements HashMap<E> {
+public class HashMapImpl<E, T> implements HashMap<E, T> {
     private int size = 0;
-    private int capacity = 16;
-    private E[] data;
+    private LinkedList<Entry<E, T>>[] data;
+    private final int MAX_SIZE_OF_MAP;
+
+    private class Entry<E, T> {
+        E key;
+        T value;
+
+        public Entry(E key, T value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
 
     public HashMapImpl(int capacity) {
-        this.capacity = capacity;
-        this.data = (E[]) new Object[capacity];
+        if (capacity <= 0)
+            throw new IllegalArgumentException("Invalid capacity of HashMap: " + capacity);
+        this.MAX_SIZE_OF_MAP = capacity;
+        this.data = new LinkedList[capacity];
     }
 
-    private boolean isFull() {
-        return data.length == capacity;
-    }
-
-    private void grow() {
-        E[] bigData = (E[]) new Object[capacity * 2];
-        System.arraycopy(data, 0, bigData, 0, data.length);
-        data = bigData;
-        helpGC(bigData);
-    }
-
-    private void helpGC(E[] array) {
-        array = null;
-        Arrays.fill(array, null);
-    }
-
-    private int hashFunc() {
-        return 0;
-    }
 
     @Override
-    public void add(E value) {
-        if (isFull())
-            grow();
-
-        int index = getIndex(value);
-
+    public void put(E key, T value) {
+        int index = hashFunc(key);
+        if (data[index] == null) {
+            data[index] = new LinkedList<Entry<E, T>>();
+        }
+        data[index].addFirst(new Entry<>(key, value));
     }
 
-    private int getIndex(E value) {
+    private int hashFunc(E key) {
+        return key.hashCode() % MAX_SIZE_OF_MAP;
+    }
+
+    private T get(E key) {
+        int index = hashFunc(key);
+        if (data[index]==null)
+            return null;
+        LinkedList<Entry<E,T>> list = data[index];
+        while (list.)
         return 0;
     }
 
@@ -52,12 +54,12 @@ public class HashMapImpl<E> implements HashMap<E> {
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return size == 0;
     }
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override
