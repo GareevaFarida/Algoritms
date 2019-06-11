@@ -1,5 +1,6 @@
 package Lesson8;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class HashMapImpl<E, T> implements HashMap<E, T> {
@@ -32,6 +33,7 @@ public class HashMapImpl<E, T> implements HashMap<E, T> {
             data[index] = new LinkedList<Entry<E, T>>();
         }
         data[index].addFirst(new Entry<>(key, value));
+        size++;
     }
 
     private int hashFunc(E key) {
@@ -40,15 +42,35 @@ public class HashMapImpl<E, T> implements HashMap<E, T> {
 
     private T get(E key) {
         int index = hashFunc(key);
-        if (data[index]==null)
+        LinkedList<Entry<E, T>> list = data[index];
+        if (list == null)
             return null;
-        LinkedList<Entry<E,T>> list = data[index];
-        while (list.)
-        return 0;
+        Iterator<Entry<E, T>> iter = list.iterator();
+        while (iter.hasNext()) {
+            Entry<E, T> currentEntry = iter.next();
+            if (currentEntry.key.equals(key)) {
+                return currentEntry.value;
+            }
+        }
+        return null;
     }
 
     @Override
-    public boolean delete(E value) {
+    public boolean delete(E key) {
+        int index = hashFunc(key);
+        LinkedList<Entry<E, T>> list = data[index];
+        if (list == null)
+            return false;
+
+        Iterator<Entry<E, T>> iter = list.iterator();
+        while (iter.hasNext()) {
+            Entry<E, T> currentEntry = iter.next();
+            if (currentEntry.key.equals(key)) {
+                iter.remove();
+                size--;
+                return true;
+            }
+        }
         return false;
     }
 
