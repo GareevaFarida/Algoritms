@@ -2,6 +2,7 @@ package Lesson8;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class HashMapImpl<E, T> implements HashMap<E, T> {
     private int size = 0;
@@ -15,6 +16,19 @@ public class HashMapImpl<E, T> implements HashMap<E, T> {
         public Entry(E key, T value) {
             this.key = key;
             this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Entry<?, ?> entry = (Entry<?, ?>) o;
+            return key.equals(entry.key);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(key);
         }
     }
 
@@ -31,8 +45,16 @@ public class HashMapImpl<E, T> implements HashMap<E, T> {
         int index = hashFunc(key);
         if (data[index] == null) {
             data[index] = new LinkedList<Entry<E, T>>();
+        } else {
+            //ищем существующую запись с таким же ключом
+            Entry<E, T> entry = getEntryByKey(data[index], key);
+            if (entry == null)
+                //запись не найдена, создаем новый элемент в списке
+                data[index].addFirst(new Entry<>(key, value));
+            else
+                //обновляем значение на новое
+                entry.value = value;
         }
-        data[index].addFirst(new Entry<>(key, value));
         size++;
     }
 
@@ -45,11 +67,18 @@ public class HashMapImpl<E, T> implements HashMap<E, T> {
         LinkedList<Entry<E, T>> list = data[index];
         if (list == null)
             return null;
+        Entry<E, T> entry = getEntryByKey(list, key);
+        if (entry != null)
+            return entry.value;
+        return null;
+    }
+
+    private Entry<E, T> getEntryByKey(LinkedList<Entry<E, T>> list, E key) {
         Iterator<Entry<E, T>> iter = list.iterator();
         while (iter.hasNext()) {
             Entry<E, T> currentEntry = iter.next();
             if (currentEntry.key.equals(key)) {
-                return currentEntry.value;
+                return currentEntry;
             }
         }
         return null;
@@ -61,16 +90,8 @@ public class HashMapImpl<E, T> implements HashMap<E, T> {
         LinkedList<Entry<E, T>> list = data[index];
         if (list == null)
             return false;
-
-        Iterator<Entry<E, T>> iter = list.iterator();
-        while (iter.hasNext()) {
-            Entry<E, T> currentEntry = iter.next();
-            if (currentEntry.key.equals(key)) {
-                iter.remove();
-                size--;
-                return true;
-            }
-        }
+        if (list.remove(new Entry<>(key, null)))
+            size--;
         return false;
     }
 
@@ -90,7 +111,7 @@ public class HashMapImpl<E, T> implements HashMap<E, T> {
             System.out.println("Structure is empty.");
             return;
         }
-
+        System.out.println("-------------------------------------------");
         for (int indexOfTable = 0; indexOfTable < data.length; indexOfTable++) {
             LinkedList<Entry<E, T>> list = data[indexOfTable];
             if (list == null
@@ -103,7 +124,7 @@ public class HashMapImpl<E, T> implements HashMap<E, T> {
                 Entry<E, T> currentEntry = iter.next();
                 System.out.println(indexOfTable + ":  " + currentEntry.key + "     " + currentEntry.value);
             }
-
         }
+        System.out.println("-------------------------------------------");
     }
 }
