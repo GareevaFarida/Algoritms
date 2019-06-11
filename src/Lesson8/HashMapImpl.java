@@ -37,10 +37,10 @@ public class HashMapImpl<E, T> implements HashMap<E, T> {
     }
 
     private int hashFunc(E key) {
-        return key.hashCode() % MAX_SIZE_OF_MAP;
+        return Math.abs(key.hashCode()) % MAX_SIZE_OF_MAP;
     }
 
-    private T get(E key) {
+    public T get(E key) {
         int index = hashFunc(key);
         LinkedList<Entry<E, T>> list = data[index];
         if (list == null)
@@ -86,22 +86,24 @@ public class HashMapImpl<E, T> implements HashMap<E, T> {
 
     @Override
     public void display() {
-        if(isEmpty()) {
+        if (isEmpty()) {
             System.out.println("Structure is empty.");
             return;
         }
 
-        for (int indexOfTable = 0; indexOfTable < data.length ; indexOfTable++) {
+        for (int indexOfTable = 0; indexOfTable < data.length; indexOfTable++) {
             LinkedList<Entry<E, T>> list = data[indexOfTable];
-            if(list==null){
-                System.out.println(indexOfTable+": --       --");
+            if (list == null
+                    || list.isEmpty()) {
+                System.out.println(indexOfTable + ": --       --");
                 continue;
             }
-            Iterator<Entry<E,T>> iter = list.iterator();
-            while (iter.hasNext()){
-                Entry<E,T> currentEntry = iter.next();
-                System.out.println(indexOfTable+":  "+currentEntry.key+"     "+currentEntry.value);
+            Iterator<Entry<E, T>> iter = list.iterator();
+            while (iter.hasNext()) {
+                Entry<E, T> currentEntry = iter.next();
+                System.out.println(indexOfTable + ":  " + currentEntry.key + "     " + currentEntry.value);
             }
+
         }
     }
 }
