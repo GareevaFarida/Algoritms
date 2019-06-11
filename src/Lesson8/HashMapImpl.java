@@ -86,6 +86,22 @@ public class HashMapImpl<E, T> implements HashMap<E, T> {
 
     @Override
     public void display() {
+        if(isEmpty()) {
+            System.out.println("Structure is empty.");
+            return;
+        }
 
+        for (int indexOfTable = 0; indexOfTable < data.length ; indexOfTable++) {
+            LinkedList<Entry<E, T>> list = data[indexOfTable];
+            if(list==null){
+                System.out.println(indexOfTable+": --       --");
+                continue;
+            }
+            Iterator<Entry<E,T>> iter = list.iterator();
+            while (iter.hasNext()){
+                Entry<E,T> currentEntry = iter.next();
+                System.out.println(indexOfTable+":  "+currentEntry.key+"     "+currentEntry.value);
+            }
+        }
     }
 }
