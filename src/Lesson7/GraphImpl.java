@@ -79,12 +79,8 @@ public class GraphImpl<E> implements Graph<E> {
                 resultsArray.add(queue.remove());
                 continue;
             }
-            Node<E> nextNode = getNearestNotVisitedVertex(currentNode, queue);
-            if (nextNode == null) {
-                queue.remove();
-            } else {
-                queue.add(nextNode);
-            }
+            findNearestNotVisitedVertexesAndPutItInQueue(currentNode, queue);
+            queue.remove();
         }
 
         //displayVarietyOfPath(resultsArray, to);
@@ -124,7 +120,7 @@ public class GraphImpl<E> implements Graph<E> {
         System.out.println(finish);
     }
 
-    private Node<E> getNearestNotVisitedVertex(Node<E> node, Queue<Node<E>> queue) {
+    private void findNearestNotVisitedVertexesAndPutItInQueue(Node<E> node, Queue<Node<E>> queue) {
         int index = node.getIndexInMatrix();
         for (int i = 0; i < MAX_VERTEX_COUNT; i++) {
             Float distance = adjMat[index][i];
@@ -137,7 +133,6 @@ public class GraphImpl<E> implements Graph<E> {
                 createNewNode(nextVertex, queue, distance);
             }
         }
-        return null;
     }
 
     private void createNewNode(Vertex<E> vertex, Queue<Node<E>> queue, Float distance) {

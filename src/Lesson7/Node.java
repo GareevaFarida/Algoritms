@@ -1,11 +1,12 @@
 package Lesson7;
 
 import java.util.ArrayList;
+import java.util.List;
 
 class Node<E> {
     private final Vertex<E> vertex;
     private final int indexInMatrix;
-    private ArrayList<Vertex<E>> listOfVisitedNeighbors;
+    private List<Vertex<E>> listOfVisitedNeighbors;
     private ArrayList<Vertex<E>> path;
     private float distance;
 
